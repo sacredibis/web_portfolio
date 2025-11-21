@@ -147,45 +147,47 @@ function setupFormHandling() {
     const contactForm = document.getElementById('contactForm');
     const formStatus = document.getElementById('formStatus');
     
-    // IMPORTANT: Replace this placeholder URL with your actual Formspree or EmailJS endpoint
-    const formActionUrl = "https://formspree.io/f/yourformid"; 
+    // Updated endpoint for your new Netlify Function
+    const formActionUrl = "/.netlify/functions/send-thankyou-email"; 
 
     if (contactForm && formStatus) {
         contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Simple loading state
+            // 1. Gather data FIRST so we can use it
+            const formData = new FormData(contactForm);
+            const data = Object.fromEntries(formData.entries()); // Converts FormData to a standard Object
+
+            // 2. Set loading state
             formStatus.textContent = "Sending message...";
             formStatus.className = 'form-status sending';
-            const formData = new FormData(contactForm);
 
             try {
-                // Using fetch to submit the form data asynchronously
+                // 3. Send as JSON (Required for the Netlify Function)
                 const response = await fetch(formActionUrl, {
                     method: 'POST',
-                    body: formData,
                     headers: {
+                        'Content-Type': 'application/json', // Content-Type must be JSON
                         'Accept': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify(data) // Convert object to JSON string
                 });
 
+                // 4. Handle Response
                 if (response.ok) {
-                    formStatus.textContent = "Message sent successfully! I'll be in touch soon.";
+                    // Success: Use the email from the data object we created earlier
+                    formStatus.textContent = `Message sent successfully! A confirmation email has been sent to ${data.email}.`;
                     formStatus.className = 'form-status success';
-                    contactForm.reset(); // Clear the form fields
+                    contactForm.reset(); 
                 } else {
-                    // Handle non-200 responses (e.g., Formspree validation errors)
+                    // Error: Try to parse the error message from the function
                     const errorData = await response.json();
-                    if (errorData.error) {
-                         formStatus.textContent = `Error: ${errorData.error}`;
-                    } else {
-                         formStatus.textContent = "Oops! There was a problem submitting your form.";
-                    }
+                    const errorMessage = errorData.msg || "Oops! There was a problem submitting your form.";
+                    formStatus.textContent = `Error: ${errorMessage}`;
                     formStatus.className = 'form-status error';
                 }
 
             } catch (error) {
-                // Handle network errors
                 console.error('Submission failed:', error);
                 formStatus.textContent = "Network error. Please try again later or email me directly.";
                 formStatus.className = 'form-status error';
