@@ -148,7 +148,7 @@ function setupFormHandling() {
     const formStatus = document.getElementById('formStatus');
     
     // Updated endpoint for your new Netlify Function
-    const formActionUrl = "/.netlify/functions/send-thankyou-email"; 
+    const formActionUrl = "/api/send-thankyou-email"; 
 
     if (contactForm && formStatus) {
         contactForm.addEventListener('submit', async function(e) {
