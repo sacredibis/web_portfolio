@@ -1,20 +1,14 @@
-// netlify/functions/send-thankyou-email.js
+import sgMail from '@sendgrid/mail';
 
-const sgMail = require('@sendgrid/mail');
-
-// 1. Get Environment Variables
-// Netlify securely injects these variables at runtime.
-const { SENDGRID_API_KEY, ADMIN_EMAIL, ADMIN_FROM_NAME } = process.env;
-
-// Set the SendGrid API key
-if (SENDGRID_API_KEY) {
-    sgMail.setApiKey(SENDGRID_API_KEY);
+// 1. Set the API Key
+// We check if the key exists to avoid crashing if env vars are missing
+if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
 
-// 2. Cross-Client Compatible HTML Template
-// This function generates the professional, responsive thank-you email body.
+// 2. The Rich HTML Email Helper (Restored!)
+// This is your original, professional HTML table layout.
 const getThankYouHtml = (name) => {
-    // Note: Inline CSS and HTML tables are used for compatibility (as per the guide).
     return `
         <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#f9fafb" role="presentation">
             <tr>
@@ -41,7 +35,7 @@ const getThankYouHtml = (name) => {
                                 <p style="margin-top: 25px;">Best regards,</p>
                                 <p style="margin: 0; font-weight: bold;">Charleston Battle</p>
                                 <p style="margin: 0; font-size: 14px; color: #6b7280;">
-                                    <a href="https://charlestonbattle.netlify.app" style="color: #2563eb; text-decoration: none;">Web Developer & HTML Email Specialist</a>
+                                    <a href="https://charlestonbattle.vercel.app" style="color: #2563eb; text-decoration: none;">Web Developer & HTML Email Specialist</a>
                                 </p>
                             </td>
                         </tr>
@@ -50,7 +44,7 @@ const getThankYouHtml = (name) => {
                             <td align="center" style="padding: 15px 0; font-family: Arial, sans-serif; font-size: 12px; color: #6b7280; background-color: #f3f4f6; border-top: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
                                 <p style="margin: 0;">&copy; 2024 Charleston Battle. All rights reserved.</p>
                                 <p style="margin: 0; font-size: 11px;">
-                                    If you believe you received this in error, you may <a href="https://charlestonbattle.netlify.app/#contact" style="color: #6b7280; text-decoration: underline;">unsubscribe here</a>.
+                                    If you believe you received this in error, you may <a href="https://charlestonbattle.vercel.app/#contact" style="color: #6b7280; text-decoration: underline;">unsubscribe here</a>.
                                 </p>
                             </td>
                         </tr>
@@ -61,26 +55,30 @@ const getThankYouHtml = (name) => {
     `;
 };
 
-
-// 3. Main Handler
-exports.handler = async function (event) {
-    // Enforce POST method
-    if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' };
+// 3. The Vercel Handler (ES Module Syntax)
+export default async function handler(req, res) {
+    // Ensure we only accept POST requests
+    if (req.method !== 'POST') {
+        res.setHeader('Allow', ['POST']);
+        return res.status(405).send('Method Not Allowed');
     }
 
     try {
-        const data = JSON.parse(event.body);
-        const { name, email, message } = data; // Destructure form fields
+        // Vercel automatically parses JSON bodies, so we can destructure directly
+        const { name, email, message } = req.body;
 
+        // Validation
         if (!name || !email || !message) {
-            return { statusCode: 400, body: JSON.stringify({ msg: 'Missing required form data.' }) };
+            return res.status(400).json({ msg: 'Missing required form data.' });
         }
-        
-        // 1. Message to the Admin (You)
+
+        // 1. Message to Admin (You)
         const msgToAdmin = {
-            to: ADMIN_EMAIL,
-            from: { email: ADMIN_EMAIL, name: ADMIN_FROM_NAME }, // Must be your verified SendGrid sender
+            to: process.env.ADMIN_EMAIL,
+            from: { 
+                email: process.env.ADMIN_EMAIL, 
+                name: process.env.ADMIN_FROM_NAME 
+            },
             subject: `NEW LEAD: Contact Form Submission from ${name}`,
             html: `
                 <p>You received a new message from your portfolio contact form:</p>
@@ -88,32 +86,37 @@ exports.handler = async function (event) {
                 <p><strong>Email:</strong> ${email}</p>
                 <p><strong>Message:</strong></p>
                 <p style="border-left: 3px solid #10b981; padding-left: 10px;">${message.replace(/\n/g, '<br>')}</p>
-                <p><strong>URL:</strong> https://charlestonbattle.netlify.app</p>
+                <p><strong>URL:</strong> https://charlestonbattle.vercel.app</p>
             `,
         };
 
-        // 2. Thank-You Email to the Sender (Client)
+        // 2. Message to Client (The HTML Email)
         const msgToClient = {
-            to: email, // The client's email address
-            from: { email: ADMIN_EMAIL, name: ADMIN_FROM_NAME }, // Must be your verified SendGrid sender
+            to: email,
+            from: { 
+                email: process.env.ADMIN_EMAIL, 
+                name: process.env.ADMIN_FROM_NAME 
+            },
             subject: `Thank you for reaching out, ${name}!`,
-            html: getThankYouHtml(name), 
-            text: `Hi ${name},\n\nThank you for reaching out! I've received your message and will be in touch within 1 business day to discuss your project. I look forward to connecting with you soon!\n\nBest regards,\nCharleston Battle`
+            html: getThankYouHtml(name), // <--- Using your helper function here!
+            text: `Hi ${name},\n\nThank you for reaching out! I've received your message and will be in touch within 1 business day to discuss your project.\n\nBest regards,\nCharleston Battle`
         };
 
-        // Send both messages simultaneously using SendGrid's batch send
+        // Send both emails
         await sgMail.send([msgToAdmin, msgToClient]);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ msg: `Message sent successfully! A confirmation email has been sent to ${email}.` }),
-        };
+        // Success Response
+        return res.status(200).json({ 
+            success: true, 
+            message: `Message sent successfully! A confirmation email has been sent to ${email}.` 
+        });
 
-    } catch (err) {
-        console.error('SendGrid/Server Error:', err.message);
-        return {
-            statusCode: err.code || 500,
-            body: JSON.stringify({ msg: `Sorry, there was an issue sending the email. Status: ${err.code}` }),
-        };
+    } catch (error) {
+        console.error('SendGrid Error:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Sorry, there was an issue sending the email.',
+            error: error.message
+        });
     }
-};
+}
