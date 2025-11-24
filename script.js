@@ -16,7 +16,7 @@ const projectsData = [
         description: "A responsive, modern shopping interface built with a focus on usability and performance.",
         image: "images/technology-desk_setup.png", // Placeholder path
         tags: ["Webflow", "E-commerce"],
-        liveUrl: "https://e-commerce-showcase-v2.design.webflow.com/",
+        liveUrl: "https://e-commerce-showcase-v2.webflow.io",
         githubUrl: "https://github.com/sacredibis"
     }
     // Add more projects as needed
@@ -41,7 +41,7 @@ function loadProjects() {
                          onerror="this.onerror=null; this.src='${placeholderImgUrl}';">
                 </div>
                 <div class="card-content">
-                    <h3 class="card-title">${project.title}</h3>
+                    <a href"https://e-commerce-showcase-v2.webflow.io/"><h3 class="card-title">${project.title}</h3></a>
                     <p class="card-description">${project.description}</p>
                 </div>
             </a>
