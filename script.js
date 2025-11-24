@@ -12,43 +12,19 @@
 // This array holds the data used to dynamically generate project cards.
 const projectsData = [
     {
-        title: "E-Commerce Frontend Showcase",
+        title: "E-Commerce Showcase V2",
         description: "A responsive, modern shopping interface built with a focus on usability and performance.",
-        image: "images/ecommerce-showcase.png", // Placeholder path
-        tags: ["React", "Tailwind CSS", "Redux"],
-        liveUrl: "https://example.com/ecommerce-live",
-        githubUrl: "https://github.com/charleston/ecommerce-repo"
-    },
-    {
-        title: "HTML Email Template Builder",
-        description: "A tool to quickly generate and test responsive, cross-client compatible HTML email templates.",
-        image: "images/email-builder.png", // Placeholder path
-        tags: ["Handlebars", "Inky", "Gulp"],
-        liveUrl: "https://example.com/email-builder-live",
-        githubUrl: "https://github.com/charleston/email-builder-repo"
-    },
-    {
-        title: "To-Do List with Local Storage",
-        description: "A simple, yet powerful task management application using vanilla JavaScript for data persistence.",
-        image: "images/todo-app.png", // Placeholder path
-        tags: ["Vanilla JS", "HTML5", "CSS3"],
-        liveUrl: "https://example.com/todo-live",
-        githubUrl: "https://github.com/charleston/todo-repo"
-    },
-    {
-        title: "Portfolio V1 (This Site)",
-        description: "The initial version of my professional portfolio, focused on clean design and accessibility.",
-        image: "images/portfolio-v1.png", // Placeholder path
-        tags: ["HTML", "CSS", "JavaScript"],
-        liveUrl: "#home",
-        githubUrl: "https://github.com/charleston/portfolio-v1"
+        image: "images/technology-desk_setup.png", // Placeholder path
+        tags: ["Webflow", "E-commerce"],
+        liveUrl: "https://e-commerce-showcase-v2.design.webflow.com/",
+        githubUrl: "https://github.com/sacredibis"
     }
     // Add more projects as needed
 ];
 
 // --- 2. Dynamic Project Card Generation ---
 function loadProjects() {
-    const projectsGrid = document.getElementById('projectsGrid');
+    const projectsGrid = document.getElementById('projectsContainer');
 
     if (!projectsGrid) {
         console.error("Projects grid element not found.");
@@ -57,33 +33,20 @@ function loadProjects() {
 
     projectsData.forEach(project => {
         const card = document.createElement('div');
-        card.className = 'project-card';
-        // Add data-category based on the first tag, if needed for future filtering
-        card.setAttribute('data-category', project.tags[0] ? project.tags[0].toLowerCase().replace(/\s/g, '-') : 'general');
-
-        const tagsHtml = project.tags.map(tag => `<span>${tag}</span>`).join('');
-
-        // Use a placeholder image with a fallback (onerror) for safety
         const placeholderImgUrl = `https://placehold.co/400x300/e0e7ff/1e40af?text=${encodeURIComponent(project.title)}&font=sans-serif`;
-        const imageHtml = `
-            <div class="project-image">
-                <img src="${project.image}" alt="${project.title} Screenshot" 
-                     onerror="this.onerror=null; this.src='${placeholderImgUrl}';">
-                <div class="project-overlay">
-                    <div class="project-info">
-                        <h3>${project.title}</h3>
-                        <p>${project.description}</p>
-                        <div class="project-tags">${tagsHtml}</div>
-                        <div class="project-links">
-                            <a href="${project.liveUrl}" target="_blank" class="btn btn-secondary btn-sm">View Live</a>
-                            <a href="${project.githubUrl}" target="_blank" class="btn btn-secondary btn-sm">GitHub</a>
-                        </div>
-                    </div>
+        const cardHtml = `
+            <a href="${project.liveUrl}" target="_blank" class="modern-card-container">
+                <div class="project-image">
+                    <img src="${project.image}" alt="${project.title} Screenshot" 
+                         onerror="this.onerror=null; this.src='${placeholderImgUrl}';">
                 </div>
-            </div>
+                <div class="card-content">
+                    <h3 class="card-title">${project.title}</h3>
+                    <p class="card-description">${project.description}</p>
+                </div>
+            </a>
         `;
-
-        card.innerHTML = imageHtml;
+        card.innerHTML = cardHtml;
         projectsGrid.appendChild(card);
     });
 }
