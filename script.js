@@ -22,7 +22,7 @@ const projectsData = [
     {
         title: "E-Commerce Platform App",
         description: "Full-stack E-Commerce site built with MERN (MongoDB, Express, React, Node.js) and Tailwind CSS. Features secure JWT authentication, server-side cart logic, Stripe payment integration, and a role-based Admin Dashboard for product management.",
-        image: "",
+        image: "images/ecommerce_showcase00.png",
         tags: ["MERN", "Full-Stack", "React", "Stripe", "E-Commerce"],
         liveUrl: "https://fullstack-ecommerce-azure.vercel.app",
         githubUrl:"https://github.com/sacredibis/fullstack_ecommerce"
