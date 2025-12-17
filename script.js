@@ -14,7 +14,7 @@ const projectsData = [
     {
         title: "E-Commerce Showcase V2",
         description: "A responsive, modern shopping interface built with a focus on usability and performance.",
-        image: "images/technology-desk_setup.png", // Placeholder path
+        image: "images/ecommerce_showcase00", // Placeholder path
         tags: ["Webflow", "E-commerce"],
         liveUrl: "https://e-commerce-showcase-v2.webflow.io",
         githubUrl: "https://github.com/sacredibis"
@@ -22,7 +22,7 @@ const projectsData = [
     {
         title: "E-Commerce Platform App",
         description: "Full-stack E-Commerce site built with MERN (MongoDB, Express, React, Node.js) and Tailwind CSS. Features secure JWT authentication, server-side cart logic, Stripe payment integration, and a role-based Admin Dashboard for product management.",
-        image: "images/ecommerce_showcase00.png",
+        image: "images/technology-desk_setup.png",
         tags: ["MERN", "Full-Stack", "React", "Stripe", "E-Commerce"],
         liveUrl: "https://fullstack-ecommerce-azure.vercel.app",
         githubUrl:"https://github.com/sacredibis/fullstack_ecommerce"
