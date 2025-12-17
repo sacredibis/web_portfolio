@@ -14,7 +14,7 @@ const projectsData = [
     {
         title: "E-Commerce Showcase V2",
         description: "A responsive, modern shopping interface built with a focus on usability and performance.",
-        image: "images/ecommerce_showcase00", // Placeholder path
+        image: "images/ecommerce_showcase00.png", // Placeholder path
         tags: ["Webflow", "E-commerce"],
         liveUrl: "https://e-commerce-showcase-v2.webflow.io",
         githubUrl: "https://github.com/sacredibis"
